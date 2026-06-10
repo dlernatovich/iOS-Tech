@@ -655,6 +655,16 @@ navigationController.pushViewController(hosting, animated: true)`,
       <h3>Приклад коду</h3>
       <pre><code>${escapeHtml(lesson.code)}</code></pre>
     </div>
+    <div class="learning-grid learning-deep-dive">
+      <div class="learning-block">
+        <h3>Як відповідати кандидату</h3>
+        <p>${candidateGuide(lesson)}</p>
+      </div>
+      <div class="learning-block">
+        <h3>Що перевіряти інтерв'юеру</h3>
+        <p>${interviewerGuide(lesson)}</p>
+      </div>
+    </div>
     <div class="learning-block learning-note">
       <h3>На що звернути увагу</h3>
       <p>${lesson.note}</p>
@@ -667,5 +677,13 @@ navigationController.pushViewController(hosting, animated: true)`,
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;");
+  }
+
+  function candidateGuide(lesson) {
+    return `Почни з практичної причини: ${lesson.why} Потім поясни механіку простими словами: ${lesson.how} Після цього пройди приклад коду рядок за рядком і заверши обмеженням або ризиком: ${lesson.note}`;
+  }
+
+  function interviewerGuide(lesson) {
+    return `Перевіряй, чи кандидат не просто знає термін, а може пояснити навіщо це потрібно, показати код і назвати production-ризик. Хороший follow-up: попросити змінити приклад під помилку, тестування, асинхронність або командний масштаб.`;
   }
 })();

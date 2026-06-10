@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Генератор питань для iOS співбесіди</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <p class="eyebrow">Interview Mode</p>
+    <h1>Сформувати питання для співбесіди</h1>
+    <p>
+      Обери кількість, рівень і напрям. Генератор збере випадковий набір питань із навчальної бази.
+      Це можна використовувати і кандидату для самоперевірки, і інтерв'юеру для швидкої підготовки розмови.
+    </p>
+  </header>
+
+  <main>
+    <section class="study-guide interview-controls">
+      <label>
+        Кількість питань
+        <input id="questionCount" type="number" min="1" max="50" value="10">
+      </label>
+
+      <label>
+        Рівень
+        <select id="levelFilter">
+          <option value="all">Всі рівні</option>
+          <option value="Junior">Junior</option>
+          <option value="Middle">Middle</option>
+          <option value="Senior">Senior</option>
+        </select>
+      </label>
+
+      <label>
+        Напрям
+        <select id="groupFilter">
+          <option value="all">Всі напрями</option>
+          <option value="Core">Core</option>
+          <option value="UI">UI</option>
+          <option value="Networking">Networking</option>
+        </select>
+      </label>
+
+      <button id="generateQuestions" type="button">Сформувати</button>
+    </section>
+
+    <section class="interview-summary" aria-live="polite">
+      <h2 id="resultTitle">Питання ще не сформовані</h2>
+      <p id="resultDescription">Натисни “Сформувати”, щоб отримати випадковий набір.</p>
+    </section>
+
+    <section id="questionList" class="question-list"></section>
+  </main>
+
+  <script src="assets/questions.js"></script>
+  <script src="assets/interview.js"></script>
+</body>
+</html>
