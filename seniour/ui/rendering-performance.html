@@ -1,0 +1,5 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rendering performance</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Seniour / UI</p><h1>Як діагностувати проблеми rendering performance?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Проблеми видно як dropped frames, stutters, slow scrolling. Причини: main-thread work, важкий Auto Layout, sync image decoding, overdraw, offscreen rendering, занадто часті SwiftUI updates.</p><p>Інструменти: Core Animation, Time Profiler, os_signpost, Xcode View Debugger. Рішення: prefetching, caching, background decoding, зменшення invalidations, стабільна ідентичність views/items.</p></section></main><script src="../../assets/learning.js"></script></body>
+</html>

@@ -1,0 +1,10 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Optionals</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Core</p><h1>Що таке Optional і як безпечно дістати значення?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>Optional&lt;T&gt;</code> означає, що значення типу <code>T</code> може бути відсутнім. Безпечні способи роботи: <code>if let</code>, <code>guard let</code>, optional chaining, nil-coalescing <code>??</code>.</p><p>Force unwrap <code>!</code> варто використовувати тільки коли інваріант гарантований і падіння програми буде коректним сигналом помилки розробника.</p><pre><code class="language-swift">func title(from response: [String: String]) -> String {
+    guard let title = response["title"], !title.isEmpty else {
+        return "Untitled"
+    }
+    return title
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

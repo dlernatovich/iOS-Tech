@@ -1,0 +1,9 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Auto Layout basics</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / UI</p><h1>Що таке Auto Layout constraints?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Auto Layout описує позицію та розмір view через constraints: відступи, ширину, висоту, alignment, relationship між елементами. Система розв'язує ці рівняння для різних екранів і орієнтацій.</p><p>Часті проблеми: ambiguous layout, unsatisfiable constraints, забутий <code>translatesAutoresizingMaskIntoConstraints = false</code>.</p><pre><code class="language-swift">button.translatesAutoresizingMaskIntoConstraints = false
+NSLayoutConstraint.activate([
+    button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+    button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
+])</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

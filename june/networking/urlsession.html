@@ -1,0 +1,11 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>URLSession</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Networking</p><h1>Як базово виконати request через URLSession?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>URLSession</code> виконує network tasks: data, upload, download, stream. У сучасному Swift зручно використовувати async API <code>data(from:)</code> або <code>data(for:)</code>.</p><pre><code class="language-swift">let url = URL(string: "https://example.com/users")!
+let (data, response) = try await URLSession.shared.data(from: url)
+
+guard let http = response as? HTTPURLResponse,
+      (200...299).contains(http.statusCode) else {
+    throw URLError(.badServerResponse)
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

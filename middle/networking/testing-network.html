@@ -1,0 +1,7 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Testing networking</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Middle / Networking</p><h1>Як тестувати networking layer?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Networking layer тестують через protocol abstraction, mock clients, custom <code>URLProtocol</code>, fixtures для JSON і перевірку mapping errors. Unit tests не мають залежати від реальної мережі.</p><pre><code class="language-swift">protocol HTTPClient {
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse)
+}</code></pre><p>Integration tests з реальним backend можуть бути окремими і менш частими.</p></section></main><script src="../../assets/learning.js"></script></body>
+</html>

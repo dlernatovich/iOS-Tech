@@ -1,0 +1,5 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Background transfers</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Seniour / Networking</p><h1>Як працюють background uploads/downloads?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>URLSessionConfiguration.background</code> дозволяє системі продовжувати transfers, навіть якщо app suspended. Потрібні delegate callbacks, stable session identifier і правильна обробка app relaunch.</p><p>Важливо врахувати file-based upload, progress persistence, battery/network constraints, retries і UX для довгих операцій.</p></section></main><script src="../../assets/learning.js"></script></body>
+</html>

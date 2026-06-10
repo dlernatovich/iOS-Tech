@@ -1,0 +1,5 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Retry and backoff</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Middle / Networking</p><h1>Як реалізувати retry, timeout і backoff?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Retry варто робити тільки для transient errors і бажано для idempotent requests. Backoff з jitter зменшує навантаження на сервер. Timeout має бути явним і різним для resource/request залежно від кейсу.</p><p>Не можна бездумно retry-ити payment, order creation або інші non-idempotent operations без idempotency key.</p></section></main><script src="../../assets/learning.js"></script></body>
+</html>

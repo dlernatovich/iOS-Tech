@@ -1,0 +1,5 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Status codes</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Networking</p><h1>Як обробляти status codes?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>2xx</code> означає успіх, <code>3xx</code> redirect, <code>4xx</code> client error, <code>5xx</code> server error. В iOS-коді не варто вважати request успішним тільки тому, що немає transport error.</p><p>Потрібно перевіряти <code>HTTPURLResponse.statusCode</code> і мапити його у зрозумілі app-level помилки.</p></section></main><script src="../../assets/learning.js"></script></body>
+</html>

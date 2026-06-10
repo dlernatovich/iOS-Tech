@@ -1,0 +1,12 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Error handling</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Core</p><h1>Як працює error handling у Swift?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Swift використовує <code>throw</code>, <code>throws</code>, <code>do/catch</code>, <code>try</code>, <code>try?</code> і <code>try!</code>. Помилки часто описують enum, який conform до <code>Error</code>.</p><p>На практиці важливо мапити низькорівневі помилки в доменні, щоб UI не знав деталей мережі, бази даних чи JSON.</p><pre><code class="language-swift">enum LoginError: Error {
+    case invalidCredentials
+    case serverUnavailable
+}
+
+func login() throws {
+    throw LoginError.invalidCredentials
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

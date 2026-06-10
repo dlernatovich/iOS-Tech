@@ -1,0 +1,11 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ARC basics</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Core</p><h1>Що таке ARC, strong, weak та unowned?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>ARC автоматично рахує strong-посилання на об'єкти класів і звільняє пам'ять, коли посилань не лишається. <code>weak</code> не утримує об'єкт і стає <code>nil</code>. <code>unowned</code> також не утримує, але не optional і впаде, якщо об'єкт уже звільнений.</p><p>Типовий кейс: delegate майже завжди <code>weak</code>, щоб уникнути retain cycle.</p><pre><code class="language-swift">protocol ScreenDelegate: AnyObject {
+    func didTapClose()
+}
+
+final class ScreenViewModel {
+    weak var delegate: ScreenDelegate?
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

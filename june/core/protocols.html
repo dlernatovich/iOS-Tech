@@ -1,0 +1,13 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Protocols</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Core</p><h1>Для чого потрібні protocols і protocol extensions?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Protocol описує контракт: які властивості або методи має мати тип. Extension може додати дефолтну реалізацію, що допомагає зменшити дублювання.</p><p>Це основа delegation, dependency inversion, тестування через mocks і багатьох стандартних Swift API.</p><pre><code class="language-swift">protocol Trackable {
+    func track(_ event: String)
+}
+
+extension Trackable {
+    func trackScreen(_ name: String) {
+        track("screen_opened:\(name)")
+    }
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

@@ -1,0 +1,12 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Swift concurrency</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Middle / Core</p><h1>Що таке async/await і structured concurrency?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>async/await</code> робить асинхронний код схожим на синхронний, а structured concurrency задає життєвий цикл задач через ієрархію: child tasks прив'язані до parent task.</p><p>Варто згадати cancellation propagation, <code>TaskGroup</code>, <code>MainActor</code> для UI і те, що async не означає автоматично background thread.</p><pre><code class="language-swift">@MainActor
+final class UsersViewModel: ObservableObject {
+    @Published private(set) var users: [User] = []
+
+    func load() async throws {
+        users = try await service.fetchUsers()
+    }
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

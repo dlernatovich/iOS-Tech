@@ -1,0 +1,14 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Value types vs reference types</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Core</p><h1>Чим value types відрізняються від reference types?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>struct</code>, <code>enum</code> і tuple у Swift є value types: при присвоєнні або передачі створюється логічна копія значення. <code>class</code> є reference type: змінні зберігають посилання на один і той самий об'єкт.</p><p>На співбесіді важливо згадати мутабельність, ARC для класів, copy-on-write в стандартних колекціях і те, що value types часто простіше тестувати та безпечніше використовувати в конкурентному коді.</p><pre><code class="language-swift">struct Profile {
+    var name: String
+}
+
+var a = Profile(name: "Ira")
+var b = a
+b.name = "Oleh"
+
+print(a.name) // Ira
+print(b.name) // Oleh</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

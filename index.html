@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Senior iOS Developer Interview Theory</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <p class="eyebrow">iOS Interview Theory</p>
+    <h1>Питання та короткі відповіді для співбесіди Senior iOS Developer</h1>
+    <p>
+      Матеріали розбиті за рівнями та групами. Кожне питання живе в окремому HTML-файлі,
+      тому його легко редагувати, доповнювати прикладами коду або переносити між секціями.
+    </p>
+  </header>
+
+  <main>
+    <section class="study-guide">
+      <h2>Як користуватись сайтом для навчання</h2>
+      <p>
+        Починай із Junior-рівня, навіть якщо готуєшся на Senior: базові питання часто
+        відкривають прогалини у фундаменті. Для кожної теми спробуй спочатку відповісти
+        вголос за 1-2 хвилини, потім відкрий сторінку, звір коротку відповідь і пройди
+        навчальні блоки: суть, як пояснювати на співбесіді, типові помилки та практику.
+      </p>
+      <p>
+        Для Senior-підготовки особливо корисно не просто знати визначення, а вміти говорити
+        про trade-offs: продуктивність, тестованість, підтримку, безпеку, міграції та роботу
+        команди в довгостроковому проєкті.
+      </p>
+    </section>
+
+    <section class="level" id="june">
+      <div class="level-heading">
+        <p class="eyebrow">Level 1</p>
+        <h2>June / Junior</h2>
+      </div>
+
+      <article class="group">
+        <h3>Core</h3>
+        <ul>
+          <li><a href="june/core/value-vs-reference.html">Value types vs reference types</a></li>
+          <li><a href="june/core/optionals.html">Optionals та optional binding</a></li>
+          <li><a href="june/core/protocols.html">Protocols і extensions</a></li>
+          <li><a href="june/core/memory-basics.html">ARC, strong, weak, unowned</a></li>
+          <li><a href="june/core/error-handling.html">Error handling у Swift</a></li>
+        </ul>
+      </article>
+
+      <article class="group">
+        <h3>UI</h3>
+        <ul>
+          <li><a href="june/ui/uikit-lifecycle.html">UIViewController lifecycle</a></li>
+          <li><a href="june/ui/autolayout-basics.html">Auto Layout basics</a></li>
+          <li><a href="june/ui/table-collection.html">UITableView vs UICollectionView</a></li>
+          <li><a href="june/ui/storyboard-vs-code.html">Storyboard, XIB чи UI in code</a></li>
+          <li><a href="june/ui/swiftui-basics.html">SwiftUI basics: View, State, Binding</a></li>
+        </ul>
+      </article>
+
+      <article class="group">
+        <h3>Networking</h3>
+        <ul>
+          <li><a href="june/networking/http-basics.html">HTTP basics для iOS</a></li>
+          <li><a href="june/networking/urlsession.html">URLSession базово</a></li>
+          <li><a href="june/networking/codable.html">Codable parsing</a></li>
+          <li><a href="june/networking/status-codes.html">Status codes та помилки API</a></li>
+          <li><a href="june/networking/simple-api-client.html">Простий API client</a></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="level" id="middle">
+      <div class="level-heading">
+        <p class="eyebrow">Level 2</p>
+        <h2>Middle</h2>
+      </div>
+
+      <article class="group">
+        <h3>Core</h3>
+        <ul>
+          <li><a href="middle/core/generics.html">Generics та associated types</a></li>
+          <li><a href="middle/core/concurrency-basics.html">async/await і structured concurrency</a></li>
+          <li><a href="middle/core/gcd-operationqueue.html">GCD vs OperationQueue</a></li>
+          <li><a href="middle/core/copy-on-write.html">Copy-on-write</a></li>
+          <li><a href="middle/core/dependency-injection.html">Dependency Injection</a></li>
+        </ul>
+      </article>
+
+      <article class="group">
+        <h3>UI</h3>
+        <ul>
+          <li><a href="middle/ui/diffable-data-source.html">Diffable Data Source</a></li>
+          <li><a href="middle/ui/composition-layout.html">Compositional Layout</a></li>
+          <li><a href="middle/ui/swiftui-data-flow.html">SwiftUI data flow</a></li>
+          <li><a href="middle/ui/accessibility.html">Accessibility basics</a></li>
+          <li><a href="middle/ui/navigation-coordinators.html">Navigation і Coordinators</a></li>
+        </ul>
+      </article>
+
+      <article class="group">
+        <h3>Networking</h3>
+        <ul>
+          <li><a href="middle/networking/retry-backoff.html">Retry, timeout, backoff</a></li>
+          <li><a href="middle/networking/auth-refresh-token.html">Auth і refresh token flow</a></li>
+          <li><a href="middle/networking/caching.html">HTTP caching</a></li>
+          <li><a href="middle/networking/reachability.html">Reachability та offline states</a></li>
+          <li><a href="middle/networking/testing-network.html">Тестування networking layer</a></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="level" id="seniour">
+      <div class="level-heading">
+        <p class="eyebrow">Level 3</p>
+        <h2>Seniour / Senior</h2>
+      </div>
+
+      <article class="group">
+        <h3>Core</h3>
+        <ul>
+          <li><a href="seniour/core/actors-sendable.html">Actors, Sendable, data races</a></li>
+          <li><a href="seniour/core/memory-graph-leaks.html">Memory graph та leak hunting</a></li>
+          <li><a href="seniour/core/architecture-tradeoffs.html">Architecture trade-offs</a></li>
+          <li><a href="seniour/core/modularization.html">Modularization і build times</a></li>
+          <li><a href="seniour/core/performance-instruments.html">Performance profiling з Instruments</a></li>
+        </ul>
+      </article>
+
+      <article class="group">
+        <h3>UI</h3>
+        <ul>
+          <li><a href="seniour/ui/swiftui-uikit-interop.html">SwiftUI та UIKit interoperability</a></li>
+          <li><a href="seniour/ui/rendering-performance.html">Rendering performance</a></li>
+          <li><a href="seniour/ui/design-system.html">Design system для iOS</a></li>
+          <li><a href="seniour/ui/state-restoration.html">State restoration</a></li>
+          <li><a href="seniour/ui/ui-testing-strategy.html">UI testing strategy</a></li>
+        </ul>
+      </article>
+
+      <article class="group">
+        <h3>Networking</h3>
+        <ul>
+          <li><a href="seniour/networking/network-architecture.html">Networking architecture</a></li>
+          <li><a href="seniour/networking/security-pinning.html">TLS, certificate pinning, App Transport Security</a></li>
+          <li><a href="seniour/networking/graphql-rest-grpc.html">REST vs GraphQL vs gRPC</a></li>
+          <li><a href="seniour/networking/background-transfers.html">Background transfers</a></li>
+          <li><a href="seniour/networking/observability.html">Observability networking layer</a></li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

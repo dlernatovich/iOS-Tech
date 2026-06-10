@@ -1,0 +1,5 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Security and pinning</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Seniour / Networking</p><h1>TLS, certificate pinning і App Transport Security: що треба знати?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>ATS вимагає безпечних HTTPS-з'єднань за замовчуванням. Certificate/public key pinning зменшує ризик MITM, але створює operational risk: ротація сертифікатів, backup pins, incident recovery.</p><p>Не можна зберігати secrets у коді як реальний захист. Tokens - у Keychain, logs - без PII/secrets, sensitive traffic - тільки через TLS.</p></section></main><script src="../../assets/learning.js"></script></body>
+</html>

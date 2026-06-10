@@ -1,0 +1,13 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SwiftUI basics</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / UI</p><h1>Що таке View, @State та @Binding у SwiftUI?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>View</code> описує UI як функцію від стану. <code>@State</code> зберігає локальний стан view. <code>@Binding</code> передає можливість читати і змінювати стан, який належить іншій view.</p><pre><code class="language-swift">struct CounterView: View {
+    @State private var count = 0
+
+    var body: some View {
+        Button("Count: \(count)") {
+            count += 1
+        }
+    }
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

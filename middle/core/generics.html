@@ -1,0 +1,8 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Generics</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Middle / Core</p><h1>Для чого потрібні generics та associated types?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Generics дозволяють писати reusable, type-safe код без втрати інформації про тип. <code>associatedtype</code> використовується в protocols, коли конкретний тип має визначити частину контракту.</p><p>Сильна відповідь включає різницю між generic constraints, opaque types <code>some</code> і existential types <code>any</code>.</p><pre><code class="language-swift">protocol Repository {
+    associatedtype Entity
+    func load(id: String) async throws -> Entity
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

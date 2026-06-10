@@ -1,0 +1,8 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SwiftUI UIKit interoperability</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Seniour / UI</p><h1>Як поєднувати SwiftUI та UIKit у production app?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>UIHostingController</code> вбудовує SwiftUI в UIKit, а <code>UIViewRepresentable</code>/<code>UIViewControllerRepresentable</code> вбудовують UIKit у SwiftUI. Важливо контролювати navigation ownership, lifecycle, sizing, state synchronization і dependency injection.</p><pre><code class="language-swift">let controller = UIHostingController(
+    rootView: ProfileView(viewModel: viewModel)
+)
+navigationController.pushViewController(controller, animated: true)</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

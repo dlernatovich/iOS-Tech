@@ -1,0 +1,15 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Actors and Sendable</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Seniour / Core</p><h1>Actors, Sendable і data races: що важливо знати Senior iOS Developer?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p><code>actor</code> ізолює mutable state і дозволяє безпечний доступ через async boundary. <code>Sendable</code> позначає типи, які безпечно передавати між concurrency domains. Це допомагає компілятору ловити data races.</p><p>Senior має пояснити actor reentrancy, <code>MainActor</code>, unchecked Sendable, ізоляцію mutable state і межі, де потрібні locks або serial executors.</p><pre><code class="language-swift">actor TokenStore {
+    private var token: String?
+
+    func update(_ value: String) {
+        token = value
+    }
+
+    func current() -> String? {
+        token
+    }
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>

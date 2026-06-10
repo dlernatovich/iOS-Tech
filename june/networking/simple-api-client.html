@@ -1,0 +1,14 @@
+﻿<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Simple API client</title><link rel="stylesheet" href="../../assets/styles.css"></head>
+<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">June / Networking</p><h1>Як виглядає простий API client?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Навіть простий client має збирати request, виконувати його, перевіряти status code і декодувати response. Це краще, ніж розкидати <code>URLSession.shared</code> по view controllers.</p><pre><code class="language-swift">struct APIClient {
+    func get&lt;T: Decodable&gt;(_ url: URL) async throws -> T {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let http = response as? HTTPURLResponse,
+              (200...299).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+}</code></pre></section></main><script src="../../assets/learning.js"></script></body>
+</html>
