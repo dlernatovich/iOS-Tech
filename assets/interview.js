@@ -7,7 +7,10 @@
   const resultDescription = document.querySelector("#resultDescription");
   const questionList = document.querySelector("#questionList");
 
-  const questions = window.INTERVIEW_QUESTIONS || [];
+  const questions = [
+    ...(window.INTERVIEW_QUESTIONS || []),
+    ...(window.DOU_IOS_QUESTIONS || [])
+  ];
 
   generateButton.addEventListener("click", generate);
   generate();
@@ -37,13 +40,20 @@
 
     questionList.innerHTML = items
       .map((item, index) => {
+        const meta = [item.level, item.group, item.section, item.source]
+          .filter(Boolean)
+          .join(" / ");
+        const action = item.page
+          ? `<a href="${item.page}">Відкрити тему</a>`
+          : `<span class="question-source">${item.source || "Питання без сторінки"}</span>`;
+
         return `
           <article class="question-card">
             <div>
-              <p class="eyebrow">${item.level} / ${item.group}</p>
+              <p class="eyebrow">${meta}</p>
               <h3>${index + 1}. ${item.question}</h3>
             </div>
-            <a href="${item.page}">Відкрити тему</a>
+            ${action}
           </article>
         `;
       })
