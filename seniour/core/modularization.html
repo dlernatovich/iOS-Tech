@@ -1,5 +1,164 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="uk">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Modularization</title><link rel="stylesheet" href="../../assets/styles.css"></head>
-<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Seniour / Core</p><h1>Як modularization впливає на iOS-проєкт?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Модулі зменшують coupling, дають чіткі ownership boundaries, пришвидшують incremental builds і дозволяють незалежне тестування. Але надмірна модульність створює dependency graph complexity і overhead у release management.</p><p>Ключові теми: feature modules, core/shared modules, dependency direction, access control, SPM/CocoaPods/Xcode projects, binary frameworks, build caching.</p></section></main><script src="../../assets/learning.js"></script></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modularization</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <main class="qa">
+    <a class="back" href="../../index.html">← На головну</a>
+    <p class="eyebrow">Seniour / Core</p>
+    <h1>Як modularization впливає на iOS-проєкт?</h1>
+
+    <section class="qa-card">
+      <h2>Коротка відповідь</h2>
+      <p>
+        Модульна архітектура розбиває застосунок на незалежні частини з чіткими межами відповідальності.
+        Модулі зменшують coupling, дають ownership boundaries, пришвидшують incremental builds і дозволяють
+        незалежне тестування. Але надмірна модульність створює складний dependency graph, boilerplate і overhead
+        у release management.
+      </p>
+      <p>
+        Для iOS це зазвичай означає feature modules, shared/core modules, design system, networking, analytics,
+        dependency direction, access control, Swift Package Manager, binary frameworks і build caching.
+      </p>
+    </section>
+
+    <section class="learning-card">
+      <h2>Навчальний розбір</h2>
+      <div class="learning-grid">
+        <div class="learning-block">
+          <h3>Що треба зрозуміти</h3>
+          <p>
+            Модуль - це не просто папка. Це boundary: що модуль експортує назовні, що приховує всередині,
+            від яких модулів залежить і хто може його змінювати. Добра модульність робить код зрозумілішим,
+            а погана лише переносить хаос у багато маленьких targets.
+          </p>
+        </div>
+        <div class="learning-block">
+          <h3>Як пояснювати на співбесіді</h3>
+          <p>
+            Пояснюй через trade-offs: build time, testability, dependency direction, team ownership, API stability,
+            visibility і migration cost. Senior-відповідь має показати, що ти не ділиш застосунок на модулі заради
+            модулів, а вирішуєш конкретні проблеми продукту й команди.
+          </p>
+        </div>
+        <div class="learning-block">
+          <h3>Типові помилки</h3>
+          <ul>
+            <li>Створювати модуль на кожну дрібну сутність без реальної межі відповідальності.</li>
+            <li>Дозволяти feature-to-feature imports без правил dependency direction.</li>
+            <li>Експортувати всі типи як <code>public</code>, через що внутрішня реалізація стає контрактом.</li>
+            <li>Тримати shared module як смітник для всього, що “може знадобитись”.</li>
+          </ul>
+        </div>
+        <div class="learning-block">
+          <h3>Практика</h3>
+          <p>
+            Намалюй dependency graph для App, Core, DesignSystem і двох features. Потім спробуй пояснити,
+            який модуль можна тестувати окремо, який має public API, а який повинен лишитись implementation detail.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="qa-card">
+      <h2>Приклад структури модулів</h2>
+      <pre><code>App
+├── FeatureProfile
+│   ├── depends on: ProfileDomain, DesignSystem
+│   └── exposes: ProfileFlowFactory
+├── ProfileDomain
+│   ├── depends on: Foundation
+│   └── exposes: Profile, ProfileRepository
+├── Networking
+│   ├── depends on: Foundation
+│   └── exposes: HTTPClient
+└── DesignSystem
+    ├── depends on: SwiftUI/UIKit
+    └── exposes: AppButton, AppColor, Typography</code></pre>
+      <p>
+        Важлива ідея: feature може залежати від domain і design system, але domain не повинен знати про UI.
+        App-композиція збирає залежності разом і вирішує, яку реалізацію передати у feature.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Фасадний підхід: назовні видно тільки public facade</h2>
+      <p>
+        Фасадне програмування в модульній архітектурі означає, що клієнти модуля бачать маленький стабільний API,
+        а конкретні сервіси, mappers, cache і networking-код залишаються <code>internal</code>. Це зменшує coupling:
+        модуль може міняти реалізацію без зміни зовнішнього контракту.
+      </p>
+      <pre><code class="language-swift">// Sources/ProfileFeature/ProfileFeatureFacade.swift
+public protocol ProfileFeatureFacade {
+    func makeProfileScreen(userID: String) -> UIViewController
+}
+
+public enum ProfileFeatureFactory {
+    public static func make(
+        apiClient: APIClient,
+        analytics: AnalyticsTracking
+    ) -> ProfileFeatureFacade {
+        DefaultProfileFeatureFacade(
+            apiClient: apiClient,
+            analytics: analytics
+        )
+    }
+}</code></pre>
+      <pre><code class="language-swift">// Sources/ProfileFeature/Internal/DefaultProfileFeatureFacade.swift
+internal final class DefaultProfileFeatureFacade: ProfileFeatureFacade {
+    private let apiClient: APIClient
+    private let analytics: AnalyticsTracking
+
+    internal init(apiClient: APIClient, analytics: AnalyticsTracking) {
+        self.apiClient = apiClient
+        self.analytics = analytics
+    }
+
+    public func makeProfileScreen(userID: String) -> UIViewController {
+        let service = ProfileService(apiClient: apiClient)
+        let viewModel = ProfileViewModel(
+            userID: userID,
+            service: service,
+            analytics: analytics
+        )
+        return ProfileViewController(viewModel: viewModel)
+    }
+}</code></pre>
+      <pre><code class="language-swift">// Sources/ProfileFeature/Internal/ProfileService.swift
+internal final class ProfileService {
+    private let apiClient: APIClient
+
+    internal init(apiClient: APIClient) {
+        self.apiClient = apiClient
+    }
+
+    internal func loadProfile(userID: String) async throws -> Profile {
+        let dto: ProfileDTO = try await apiClient.get("/users/\(userID)")
+        return ProfileMapper.map(dto)
+    }
+}</code></pre>
+      <p>
+        Клієнт модуля не знає про <code>ProfileService</code>, <code>ProfileDTO</code>, mapper чи конкретний
+        <code>ViewModel</code>. Він працює лише з <code>ProfileFeatureFactory</code> і
+        <code>ProfileFeatureFacade</code>. Це хороший варіант, коли треба приховати складну feature-реалізацію
+        і залишити стабільний integration point для App-модуля.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Правила для модульної архітектури</h2>
+      <ul>
+        <li>Public API має бути маленьким, стабільним і навмисним.</li>
+        <li>Internal implementation може змінюватись без міграції клієнтів модуля.</li>
+        <li>Feature modules не повинні імпортувати один одного напряму без окремого contract module.</li>
+        <li>App target має збирати композицію залежностей, а не містити business logic.</li>
+        <li>Shared modules мають містити справді shared contracts, а не випадковий utility-код.</li>
+      </ul>
+    </section>
+  </main>
+</body>
 </html>

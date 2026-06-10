@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Swift Package Manager</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <main class="qa">
+    <a class="back" href="../../index.html">← На головну</a>
+    <p class="eyebrow">Seniour / Core</p>
+    <h1>Як працювати зі Swift Package Manager в iOS-проєкті?</h1>
+
+    <section class="qa-card">
+      <h2>Коротка відповідь</h2>
+      <p>
+        Swift Package Manager, або SPM, - стандартний інструмент Apple для опису Swift-пакетів, модулів,
+        targets, products, dependencies і test targets. В iOS-проєктах його використовують для зовнішніх
+        бібліотек, внутрішньої модульної архітектури, shared domain-коду, design system, networking layer
+        і feature modules.
+      </p>
+      <p>
+        На співбесіді важливо пояснити не тільки як додати package, а й як контролювати versions, dependency graph,
+        access control, public API, binary size, build time і ownership модулів.
+      </p>
+    </section>
+
+    <section class="learning-card">
+      <h2>Навчальний розбір</h2>
+      <div class="learning-grid">
+        <div class="learning-block">
+          <h3>Що треба зрозуміти</h3>
+          <p>
+            Package описує, які modules збираються, які products доступні іншим пакетам і від яких dependencies
+            вони залежать. Target - це одиниця компіляції. Product - це те, що інші можуть підключити:
+            library, executable або plugin.
+          </p>
+        </div>
+        <div class="learning-block">
+          <h3>Як пояснювати на співбесіді</h3>
+          <p>
+            Почни з простого: SPM читає <code>Package.swift</code>, резолвить versions, будує dependency graph
+            і компілює targets. Потім переходь до практики: pinning versions, package resolution, локальні packages,
+            public/internal API, test targets і modular architecture.
+          </p>
+        </div>
+        <div class="learning-block">
+          <h3>Типові помилки</h3>
+          <ul>
+            <li>Підключати dependency до всіх targets замість конкретного target, якому вона потрібна.</li>
+            <li>Відкривати весь код через <code>public</code>, бо інакше “не видно з App”.</li>
+            <li>Не фіксувати версії й отримувати непередбачувані оновлення.</li>
+            <li>Змішувати feature code, shared code і app composition в одному package target.</li>
+          </ul>
+        </div>
+        <div class="learning-block">
+          <h3>Практика</h3>
+          <p>
+            Створи локальний package з двома targets: <code>ProfileDomain</code> і <code>ProfileFeature</code>.
+            Зроби так, щоб App бачив тільки factory/facade, а services, DTO і mappers залишались internal.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="qa-card">
+      <h2>Як додати package в Xcode</h2>
+      <ol>
+        <li>Відкрий проєкт або workspace в Xcode.</li>
+        <li>Обери <code>File > Add Package Dependencies...</code>.</li>
+        <li>Встав URL репозиторію, наприклад GitHub URL.</li>
+        <li>Обери version rule: exact, branch, revision або semantic range.</li>
+        <li>Вибери product і target, до якого його треба підключити.</li>
+      </ol>
+      <p>
+        Для production зазвичай краще використовувати semantic versions або exact versions для критичних залежностей.
+        Branch dependency зручна тимчасово, але ризикована для стабільних релізів.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Як додати локальний package</h2>
+      <p>
+        Локальний package зручно використовувати для внутрішніх модулів: feature, domain, networking, design system.
+        Його можна тримати в репозиторії поруч із app target.
+      </p>
+      <pre><code>MyApp/
+├── MyApp.xcodeproj
+├── Packages/
+│   └── AppModules/
+│       ├── Package.swift
+│       ├── Sources/
+│       └── Tests/
+└── MyApp/</code></pre>
+      <p>
+        В Xcode обери <code>File > Add Packages...</code> або просто перетягни локальну package-папку в workspace.
+        Після цього підключи потрібні products до app target.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Приклад Package.swift для модульної архітектури</h2>
+      <pre><code class="language-swift">// swift-tools-version: 5.10
+import PackageDescription
+
+let package = Package(
+    name: "AppModules",
+    platforms: [
+        .iOS(.v16)
+    ],
+    products: [
+        .library(name: "ProfileDomain", targets: ["ProfileDomain"]),
+        .library(name: "ProfileFeature", targets: ["ProfileFeature"]),
+        .library(name: "Networking", targets: ["Networking"])
+    ],
+    dependencies: [
+        .package(
+            url: "https://github.com/apple/swift-collections.git",
+            from: "1.1.0"
+        )
+    ],
+    targets: [
+        .target(
+            name: "Networking",
+            dependencies: []
+        ),
+        .target(
+            name: "ProfileDomain",
+            dependencies: []
+        ),
+        .target(
+            name: "ProfileFeature",
+            dependencies: [
+                "ProfileDomain",
+                "Networking",
+                .product(name: "Collections", package: "swift-collections")
+            ]
+        ),
+        .testTarget(
+            name: "ProfileFeatureTests",
+            dependencies: ["ProfileFeature"]
+        )
+    ]
+)</code></pre>
+      <p>
+        Тут <code>ProfileFeature</code> залежить від domain і networking, але domain не знає про UI або network.
+        Це допомагає тримати dependency direction чистим.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Як менеджити SPM-залежності</h2>
+      <ul>
+        <li>Оновлюй dependencies свідомо, бажано окремим PR із changelog і тестами.</li>
+        <li>Перевіряй <code>Package.resolved</code>: він фіксує конкретні revisions.</li>
+        <li>Не додавай dependency на рівень App, якщо вона потрібна лише одному feature target.</li>
+        <li>Слідкуй за transitive dependencies, binary size і license requirements.</li>
+        <li>Винось contracts у маленькі targets, якщо треба розірвати циклічні залежності.</li>
+      </ul>
+      <pre><code># CLI-команди, корисні для package-проєктів
+swift package resolve
+swift package update
+swift test</code></pre>
+    </section>
+
+    <section class="qa-card">
+      <h2>Фасад у SPM-модулі</h2>
+      <p>
+        У Swift Package всі файли одного target бачать <code>internal</code> типи один одного. Інші modules бачать
+        лише <code>public</code> або <code>open</code>. Це природно підходить для фасадного API.
+      </p>
+      <pre><code class="language-swift">// Public API: видно з App target
+public protocol PaymentsFacade {
+    func startCheckout(orderID: String) -> UIViewController
+}
+
+public enum PaymentsModule {
+    public static func make(api: APIClient) -> PaymentsFacade {
+        DefaultPaymentsFacade(api: api)
+    }
+}</code></pre>
+      <pre><code class="language-swift">// Internal implementation: видно тільки всередині Payments target
+internal final class DefaultPaymentsFacade: PaymentsFacade {
+    private let api: APIClient
+
+    internal init(api: APIClient) {
+        self.api = api
+    }
+
+    public func startCheckout(orderID: String) -> UIViewController {
+        let service = PaymentsService(api: api)
+        let viewModel = CheckoutViewModel(orderID: orderID, service: service)
+        return CheckoutViewController(viewModel: viewModel)
+    }
+}
+
+internal final class PaymentsService {
+    private let api: APIClient
+
+    internal init(api: APIClient) {
+        self.api = api
+    }
+}</code></pre>
+      <p>
+        App target імпортує <code>PaymentsFeature</code> і працює з <code>PaymentsModule.make(...)</code>.
+        Він не може напряму створити <code>PaymentsService</code>, бо це implementation detail.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Коли робити окремий module</h2>
+      <ul>
+        <li>Є чіткий owner або команда, яка відповідає за частину продукту.</li>
+        <li>Код має стабільний API і часто перевикористовується.</li>
+        <li>Потрібне ізольоване тестування без запуску всього app target.</li>
+        <li>Є проблеми з build time або занадто великим dependency graph.</li>
+        <li>Потрібно приховати складну implementation behind facade.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

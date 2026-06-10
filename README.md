@@ -7,7 +7,7 @@
 - короткі відповіді на типові interview-питання;
 - навчальні пояснення: що зрозуміти, як відповідати, типові помилки, практика;
 - Swift-приклади для самоперевірки;
-- Senior-теми про архітектуру, performance, observability і agentic development.
+- Senior-теми про архітектуру, Swift Package Manager, performance, observability і agentic development.
 
 ## Як відкрити
 
@@ -37,6 +37,7 @@ python -m http.server 8000
 - `june/core/value-vs-reference.html`
 - `middle/networking/retry-backoff.html`
 - `seniour/core/agentic-development.html`
+- `seniour/core/swift-package-manager.html`
 
 ## Як навчатися
 
@@ -47,6 +48,16 @@ python -m http.server 8000
 5. Напиши або проговори власний приклад з реального iOS-проєкту.
 
 Для Senior-рівня корисно тренувати не визначення, а trade-offs: тестованість, підтримку, продуктивність, security, міграції, командні правила та ризики production-середовища.
+
+## Swift Package Manager і модулі
+
+У Senior/Core додано матеріали про Swift Package Manager і модульну архітектуру:
+
+- як додавати remote та local packages;
+- як описувати targets, products і dependencies в `Package.swift`;
+- як менеджити versions, `Package.resolved`, transitive dependencies і ownership;
+- як будувати feature/domain/shared modules;
+- як робити фасадний API, коли назовні видно лише `public` facade, а services, DTO, mappers і concrete implementation залишаються `internal`.
 
 ## Agentic Development
 
