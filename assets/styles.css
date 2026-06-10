@@ -55,6 +55,14 @@ button:hover {
   text-decoration: none;
 }
 
+.secondary-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .hero,
 main,
 .qa {

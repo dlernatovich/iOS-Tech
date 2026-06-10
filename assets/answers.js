@@ -1,6 +1,384 @@
 (function () {
   const rules = [
     {
+      match: ["operation", "базової імплементації operation"],
+      answer: {
+        short: "Operation - це об'єктна абстракція над задачею, яку можна запускати в OperationQueue. Вона підтримує lifecycle, cancellation, dependencies, priority і стан виконання.",
+        details: [
+          "Operation має стани: isReady, isExecuting, isFinished, isCancelled.",
+          "Можна будувати залежності: одна operation стартує після іншої.",
+          "Cancellation cooperative: operation має сама перевіряти isCancelled.",
+          "OperationQueue дозволяє обмежити maxConcurrentOperationCount і керувати priority."
+        ],
+        code: "let queue = OperationQueue()\nlet load = BlockOperation { loadImage() }\nlet resize = BlockOperation { resizeImage() }\nresize.addDependency(load)\nqueue.addOperations([load, resize], waitUntilFinished: false)",
+        interviewer: "Попроси кандидата пояснити, коли OperationQueue кращий за простий DispatchQueue."
+      }
+    },
+    {
+      match: ["кастомну анімацію", "transition", "переході з екрана"],
+      answer: {
+        short: "Складний кастомний перехід між екранами в UIKit роблять через UIViewControllerTransitioningDelegate або UINavigationControllerDelegate з власним animator object.",
+        details: [
+          "Animator реалізує UIViewControllerAnimatedTransitioning.",
+          "У transitionContext беруть fromView/toView і containerView.",
+          "Після завершення треба викликати completeTransition.",
+          "Для interactive transition додають UIPercentDrivenInteractiveTransition."
+        ],
+        code: "final class FadeAnimator: NSObject, UIViewControllerAnimatedTransitioning {\n    func transitionDuration(using context: UIViewControllerContextTransitioning?) -> TimeInterval { 0.3 }\n\n    func animateTransition(using context: UIViewControllerContextTransitioning) {\n        let toView = context.view(forKey: .to)!\n        context.containerView.addSubview(toView)\n        toView.alpha = 0\n        UIView.animate(withDuration: 0.3) {\n            toView.alpha = 1\n        } completion: { finished in\n            context.completeTransition(finished)\n        }\n    }\n}",
+        interviewer: "Follow-up: як зробити interactive dismiss жестом?"
+      }
+    },
+    {
+      match: ["побудувати інтерфейс кодом", "ui кодом", "interface кодом"],
+      answer: {
+        short: "UI in code будують через створення views, додавання в hierarchy, налаштування constraints і окремі methods для setup/style/layout.",
+        details: [
+          "Код краще ділити на configureHierarchy, configureLayout, configureStyle.",
+          "Для Auto Layout треба вимкнути translatesAutoresizingMaskIntoConstraints.",
+          "UI in code легше рев'ювити й менше конфліктує в git.",
+          "Важливо не перетворювати ViewController на великий layout-файл."
+        ],
+        code: "private func configureLayout() {\n    titleLabel.translatesAutoresizingMaskIntoConstraints = false\n    view.addSubview(titleLabel)\n    NSLayoutConstraint.activate([\n        titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),\n        titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)\n    ])\n}",
+        interviewer: "Попроси кандидата пояснити, як він організує reusable views і design system у UI in code."
+      }
+    },
+    {
+      match: ["pod’и", "pod'и", "pod-и", "локальну версію pod", "podfile", "podspec"],
+      answer: {
+        short: "У CocoaPods залежності описують у Podfile, а сам pod описують у podspec. Pods зазвичай не комітять, якщо команда домовилась відновлювати їх через pod install.",
+        details: [
+          "У репозиторій зазвичай комітять Podfile і Podfile.lock.",
+          "Pods/ можна додати в .gitignore, якщо CI і всі розробники виконують pod install.",
+          "Локальний pod підключають через path у Podfile.",
+          "Podspec описує source files, dependencies, platforms і metadata бібліотеки."
+        ],
+        code: "target 'App' do\n  pod 'DesignSystem', :path => '../DesignSystem'\nend",
+        interviewer: "Follow-up: чому Podfile.lock важливий для відтворюваних build-ів?"
+      }
+    },
+    {
+      match: ["app store connect", "новий застосунок", "поширити", "завантажити нову збірку", "зарелізити", "іконку"],
+      answer: {
+        short: "Для релізу iOS app потрібні Bundle ID, signing, App Store Connect record, archive build, upload, TestFlight/review і metadata.",
+        details: [
+          "Bundle identifier має збігатися з provisioning profile.",
+          "Archive створюють у Xcode або CI.",
+          "Build завантажують через Xcode Organizer, Transporter або fastlane.",
+          "Іконки й metadata налаштовують у project assets та App Store Connect."
+        ],
+        code: "lane :release do\n  build_app(scheme: \"App\")\n  upload_to_app_store\nend",
+        interviewer: "Попроси кандидата пояснити різницю між development, ad hoc, enterprise і App Store distribution."
+      }
+    },
+    {
+      match: ["слабозв’язаний", "сильнозв", "закон деметри", "demeter"],
+      answer: {
+        short: "Слабко зв'язаний код має мінімальні знання про конкретні реалізації інших частин системи. Це полегшує тестування, заміну компонентів і зміни.",
+        details: [
+          "Залежність від protocol краща за залежність від concrete class, коли є boundary.",
+          "Закон Деметри: об'єкт має спілкуватися тільки з близькими collaborators, а не лізти через довгі chains.",
+          "Dependency Injection і фасади допомагають зменшити coupling.",
+          "Надмірна абстракція теж шкодить, якщо вона не закриває реальну змінність."
+        ],
+        code: "protocol AnalyticsTracking {\n    func track(_ event: AnalyticsEvent)\n}\n\nfinal class CheckoutViewModel {\n    init(analytics: AnalyticsTracking) {}\n}",
+        interviewer: "Попроси кандидата переписати код виду order.user.profile.address.city на більш здоровий API."
+      }
+    },
+    {
+      match: ["відлагодження", "debugging", "інструменти відлагодження"],
+      answer: {
+        short: "В Xcode для debugging використовують breakpoints, LLDB, View Debugger, Memory Graph, Instruments, console logs і Thread Sanitizer.",
+        details: [
+          "Symbolic breakpoints ловлять системні події або exceptions.",
+          "View Debugger допомагає знайти проблеми layout/view hierarchy.",
+          "Memory Graph показує retaining paths.",
+          "Thread Sanitizer ловить data races у debug runs."
+        ],
+        code: "(lldb) po viewModel.state\n(lldb) breakpoint set --name viewDidLoad",
+        interviewer: "Попроси кандидата описати реальний баг і яким інструментом він його знайшов."
+      }
+    },
+    {
+      match: ["час компіляції", "збільшує час компіляції", "compile time"],
+      answer: {
+        short: "Час компіляції збільшують великі файли, складний type inference, heavy generics, довгі expressions, поганий module graph і надмірні dependencies.",
+        details: [
+          "Swift compiler може довго виводити типи у складних chained expressions.",
+          "Модульність може допомогти incremental builds, але поганий dependency graph шкодить.",
+          "Зайві imports і shared mega-module збільшують blast radius.",
+          "Build settings і debug flags також впливають."
+        ],
+        code: "OTHER_SWIFT_FLAGS = -Xfrontend -debug-time-function-bodies",
+        interviewer: "Follow-up: як кандидат знайде конкретну функцію, яка повільно компілюється?"
+      }
+    },
+    {
+      match: ["час запуску", "startup time", "прискорити час запуску"],
+      answer: {
+        short: "Startup time прискорюють, прибираючи важку роботу з launch path, відкладаючи ініціалізацію сервісів і вимірюючи cold/warm start.",
+        details: [
+          "Не треба синхронно читати великі файли або робити network на launch.",
+          "DI graph має створювати тільки потрібні на старті сервіси.",
+          "Lazy initialization корисна, якщо не ховає side effects.",
+          "Метрика має бути виміряна: app launch, first screen render, time to interactive."
+        ],
+        code: "func application(_ application: UIApplication, didFinishLaunchingWithOptions options: ...) -> Bool {\n    configureMinimalServices()\n    return true\n}",
+        interviewer: "Попроси кандидата назвати, що він винесе з didFinishLaunching."
+      }
+    },
+    {
+      match: ["dispatchgroup", "dispatch group"],
+      answer: {
+        short: "DispatchGroup дозволяє чекати завершення кількох асинхронних задач і виконати код після того, як усі вони завершились.",
+        details: [
+          "enter/leave вручну позначають початок і кінець роботи.",
+          "notify викликається після завершення всіх задач.",
+          "Важливо балансувати enter і leave.",
+          "У сучасному Swift часто краще async let або TaskGroup."
+        ],
+        code: "let group = DispatchGroup()\ngroup.enter()\nloadProfile { group.leave() }\ngroup.enter()\nloadPosts { group.leave() }\ngroup.notify(queue: .main) { renderScreen() }",
+        interviewer: "Follow-up: як переписати DispatchGroup на async let?"
+      }
+    },
+    {
+      match: ["ios 13", "ios 14", "життєвого циклу застосунку"],
+      answer: {
+        short: "Починаючи з iOS 13 з'явився SceneDelegate і multi-window lifecycle: lifecycle частково перейшов від app-level до scene-level.",
+        details: [
+          "UIApplicationDelegate лишився для app-wide events.",
+          "UISceneDelegate керує конкретною scene/window.",
+          "App може мати кілька scenes на iPad.",
+          "SwiftUI App lifecycle ще більше спрощує entry point."
+        ],
+        code: "func scene(_ scene: UIScene,\n           willConnectTo session: UISceneSession,\n           options connectionOptions: UIScene.ConnectionOptions) {}",
+        interviewer: "Попроси кандидата пояснити, де обробляти deep link: AppDelegate чи SceneDelegate."
+      }
+    },
+    {
+      match: ["c++", "cplusplus"],
+      answer: {
+        short: "C++ можна комбінувати зі Swift через Objective-C++ wrapper: Swift не імпортує C++ напряму в старих підходах, тому між ними ставлять .mm шар.",
+        details: [
+          "C++ код підключають у .cpp/.hpp.",
+          "Objective-C++ файл має розширення .mm і може бачити Objective-C та C++.",
+          "Swift викликає Objective-C API wrapper-а через bridging.",
+          "Треба уважно керувати ownership і типами на boundary."
+        ],
+        code: "// ObjC++ wrapper (.mm)\n@implementation ImageProcessorWrapper\n- (UIImage *)process:(UIImage *)image {\n    return Convert(process_cpp(Convert(image)));\n}\n@end",
+        interviewer: "Follow-up: чому напряму не варто протягувати C++ types у Swift API?"
+      }
+    },
+    {
+      match: ["роутингу", "роутинг", "переходів між екранами", "routing"],
+      answer: {
+        short: "Роутинг керує переходами між екранами. В iOS його реалізують через Coordinator, Router, NavigationStack або централізований flow controller.",
+        details: [
+          "UIViewController не має знати всю карту застосунку.",
+          "Coordinator створює екрани й виконує push/present.",
+          "Deep links краще мапити в route model.",
+          "SwiftUI NavigationStack може працювати з typed routes."
+        ],
+        code: "enum AppRoute: Hashable {\n    case profile(id: String)\n    case settings\n}\n\npath.append(AppRoute.profile(id: userID))",
+        interviewer: "Попроси кандидата пояснити, як він відкриє вкладений екран із push notification."
+      }
+    },
+    {
+      match: ["bitcode"],
+      answer: {
+        short: "Bitcode був проміжним представленням LLVM, яке дозволяло Apple потенційно переоптимізовувати app binary. Для сучасних iOS app bitcode більше не є актуальною вимогою.",
+        details: [
+          "Раніше bitcode був важливий для watchOS і деяких distribution сценаріїв.",
+          "Apple deprecated/прибрала bitcode requirement для більшості платформ.",
+          "У старих проєктах bitcode міг впливати на binary frameworks.",
+          "На співбесіді варто знати історичний контекст, але не перебільшувати роль сьогодні."
+        ],
+        code: "ENABLE_BITCODE = NO",
+        interviewer: "Follow-up: які проблеми binary frameworks могли мати через bitcode?"
+      }
+    },
+    {
+      match: ["cadisplaylink"],
+      answer: {
+        short: "CADisplayLink викликає callback синхронно з refresh rate екрана, тому підходить для frame-by-frame анімацій або custom rendering.",
+        details: [
+          "CADisplayLink додають у RunLoop.",
+          "Callback приходить перед оновленням кадру.",
+          "Потрібно invalidate, інакше можливий leak.",
+          "Для більшості простих анімацій краще UIViewPropertyAnimator/Core Animation."
+        ],
+        code: "displayLink = CADisplayLink(target: self, selector: #selector(tick))\ndisplayLink?.add(to: .main, forMode: .common)\n\n@objc private func tick() {\n    updateFrame()\n}",
+        interviewer: "Попроси кандидата пояснити, чому CADisplayLink треба invalidаte-ити."
+      }
+    },
+    {
+      match: ["content hugging", "compression resistance"],
+      answer: {
+        short: "Content hugging і compression resistance допомагають Auto Layout вирішити, яка view має розтягуватись або стискатись.",
+        details: [
+          "Hugging priority: наскільки view не хоче розтягуватись більше intrinsic size.",
+          "Compression resistance: наскільки view не хоче стискатись менше intrinsic size.",
+          "Особливо важливо для labels/buttons у горизонтальних layout-ах.",
+          "Неправильні priorities дають truncated text або ambiguous layout."
+        ],
+        code: "titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)\nbutton.setContentCompressionResistancePriority(.required, for: .horizontal)",
+        interviewer: "Дай кандидату layout із label і button та попроси пояснити, хто має стискатись першим."
+      }
+    },
+    {
+      match: ["переваги та недоліки має swift", "переваги swift", "недоліки swift"],
+      answer: {
+        short: "Swift дає type safety, optionals, value types, protocol-oriented style і modern concurrency, але має складний compiler, ABI/tooling нюанси й інколи довгу компіляцію.",
+        details: [
+          "Переваги: safety, expressiveness, performance, SwiftUI/concurrency ecosystem.",
+          "Недоліки: compile time, складні generics diagnostics, міграції між версіями.",
+          "Optionals зменшують null crashes.",
+          "Value semantics допомагає писати передбачувані models."
+        ],
+        code: "enum ResultState<Value> {\n    case loading\n    case loaded(Value)\n    case failed(Error)\n}",
+        interviewer: "Попроси кандидата порівняти Swift з Objective-C або Kotlin на практичному прикладі."
+      }
+    },
+    {
+      match: ["conditional conformance"],
+      answer: {
+        short: "Conditional conformance дозволяє generic type відповідати protocol тільки тоді, коли його generic parameter теж відповідає певному protocol.",
+        details: [
+          "Це робить generic containers типобезпечними.",
+          "Array є Equatable тільки коли Element: Equatable.",
+          "Корисно для wrappers, Result-like types, API response containers.",
+          "Зменшує дублювання й ручні overloads."
+        ],
+        code: "struct Box<Value> {\n    let value: Value\n}\n\nextension Box: Equatable where Value: Equatable {}",
+        interviewer: "Follow-up: чому Box<UIImage> не стане Equatable автоматично?"
+      }
+    },
+    {
+      match: ["method swizzling", "swizzling"],
+      answer: {
+        short: "Method Swizzling - це runtime-заміна implementation Objective-C method. Це потужний, але ризикований інструмент.",
+        details: [
+          "Працює через Objective-C runtime.",
+          "Може використовуватись для analytics, debugging, legacy patching.",
+          "Ризики: неочікувана поведінка, конфлікти між бібліотеками, складний debugging.",
+          "У Swift-only коді краще уникати, якщо є явна альтернатива."
+        ],
+        code: "method_exchangeImplementations(originalMethod, swizzledMethod)",
+        interviewer: "Попроси кандидата назвати production-ризики swizzling."
+      }
+    },
+    {
+      match: ["in-app purchase", "iap", "спільний контейнер", "app group"],
+      answer: {
+        short: "In-App Purchase налаштовують в App Store Connect і реалізують у застосунку через StoreKit. Спільний контейнер створюють через App Groups capability.",
+        details: [
+          "IAP product створюють у App Store Connect.",
+          "App отримує products, запускає purchase і перевіряє transaction.",
+          "StoreKit 2 спрощує async purchase flow.",
+          "App Groups дозволяє app і extension ділити контейнер/UserDefaults."
+        ],
+        code: "let result = try await product.purchase()\nfor await transaction in Transaction.updates {\n    await transaction.finish()\n}",
+        interviewer: "Follow-up: як кандидат перевірятиме receipt/transaction і що робити з restore purchases?"
+      }
+    },
+    {
+      match: ["профайлинг", "профайлингу", "засоби профайлингу"],
+      answer: {
+        short: "Профайлинг в iOS роблять через Instruments: Time Profiler, Allocations, Leaks, Core Animation, Network і Energy Log.",
+        details: [
+          "Time Profiler знаходить CPU hotspots.",
+          "Allocations/Leaks допомагають із пам'яттю.",
+          "Core Animation показує frame drops і rendering issues.",
+          "Профілювати треба на реальному device і release-like build."
+        ],
+        code: "os_signpost(.begin, log: log, name: \"RenderFeed\")\nrenderFeed()\nos_signpost(.end, log: log, name: \"RenderFeed\")",
+        interviewer: "Попроси кандидата пояснити, як він відрізнить symptom від root cause."
+      }
+    },
+    {
+      match: ["ui-операції", "головного потоку", "main thread"],
+      answer: {
+        short: "UIKit і SwiftUI state, який впливає на UI, треба оновлювати на main thread. Поза main можна робити підготовчу роботу: decoding, layout calculation, image processing.",
+        details: [
+          "Створення/мутація UIKit views має бути на main.",
+          "Декодування зображень можна робити у background.",
+          "Network і JSON parsing не мають блокувати main.",
+          "Після background work результат треба повернути на MainActor/main queue."
+        ],
+        code: "Task.detached {\n    let image = decode(data)\n    await MainActor.run {\n        imageView.image = image\n    }\n}",
+        interviewer: "Follow-up: чи можна читати frame view з background thread? Правильний напрям відповіді: UIKit state має читатися й змінюватися на main thread."
+      }
+    },
+    {
+      match: ["найважчі операції для рендеру", "рендеру ui", "render"],
+      answer: {
+        short: "Важкі для UI render операції: offscreen rendering, overdraw, shadows без shadowPath, blur/vibrancy, великі images, synchronous decoding і складні Auto Layout recalculations.",
+        details: [
+          "Image decoding у cellForItem може ламати scroll.",
+          "Тіні й masks можуть запускати offscreen rendering.",
+          "Overdraw збільшує роботу GPU.",
+          "Часті SwiftUI invalidations можуть перемальовувати забагато view tree."
+        ],
+        code: "layer.shadowPath = UIBezierPath(rect: bounds).cgPath",
+        interviewer: "Попроси кандидата пояснити, як він знайде rendering hitch в Instruments."
+      }
+    },
+    {
+      match: ["на якому потоці відбувається анімація", "анімації не блокують ui"],
+      answer: {
+        short: "Налаштування анімації відбувається на main thread, але Core Animation може виконувати композицію на render server/GPU, тому прості layer-анімації не блокують UI після commit.",
+        details: [
+          "Main thread створює animation transaction.",
+          "Core Animation інтерполює animatable properties.",
+          "Якщо main thread заблокований, нові events/layout не обробляються.",
+          "Анімація може виглядати плавною, але app все одно не реагуватиме на input, якщо main thread зайнятий."
+        ],
+        code: "UIView.animate(withDuration: 0.3) {\n    view.alpha = 0\n}",
+        interviewer: "Follow-up: чому важка робота в animation block або layoutSubviews може спричинити hitch?"
+      }
+    },
+    {
+      match: ["умовна компіляція", "conditional compilation"],
+      answer: {
+        short: "Умовна компіляція дозволяє включати різний код залежно від platform, build configuration або compiler flags.",
+        details: [
+          "#if DEBUG часто використовують для debug-only tools.",
+          "#if os(iOS) допомагає в cross-platform code.",
+          "Custom flags задають у Swift Active Compilation Conditions.",
+          "Не варто ховати business logic у великій кількості compile-time branches."
+        ],
+        code: "#if DEBUG\nlet apiBaseURL = URL(string: \"https://staging.example.com\")!\n#else\nlet apiBaseURL = URL(string: \"https://api.example.com\")!\n#endif",
+        interviewer: "Попроси кандидата пояснити різницю між runtime feature flag і compile-time flag."
+      }
+    },
+    {
+      match: ["підняття мінімальної версії ios", "мінімальної версії ios"],
+      answer: {
+        short: "Підняття мінімальної iOS-версії треба комунікувати через продуктову вигоду, ризики, статистику користувачів і план міграції.",
+        details: [
+          "Потрібна аналітика: який відсоток користувачів залишиться поза підтримкою.",
+          "Поясни вигоди: нові API, менше legacy, швидша розробка, безпека.",
+          "Запропонуй timeline і комунікацію користувачам.",
+          "Оціни вплив на QA, support і release plan."
+        ],
+        code: "IPHONEOS_DEPLOYMENT_TARGET = 16.0",
+        interviewer: "Попроси кандидата сформулювати повідомлення для product manager, а не тільки технічне пояснення."
+      }
+    },
+    {
+      match: ["найскладнішу задачу", "складнішу задачу", "як прийшли до рішення"],
+      answer: {
+        short: "На behavioral питання варто відповідати структуровано: контекст, проблема, обмеження, дії, результат і висновки.",
+        details: [
+          "Поясни, чому задача була складною: технічно, продуктово або командно.",
+          "Назви альтернативи, які розглядав.",
+          "Покажи конкретні дії, а не тільки 'ми зробили'.",
+          "Заверши вимірюваним результатом і тим, що виніс із ситуації."
+        ],
+        code: "STAR: Situation -> Task -> Action -> Result",
+        interviewer: "Добрий follow-up: що б кандидат зробив інакше зараз?"
+      }
+    },
+    {
       match: ["локального збереження", "persistent storage", "зберігання даних", "збереження даних"],
       answer: {
         short: "Локальне збереження в iOS обирають за типом даних: налаштування, секрети, файли, кеш або структурована offline-база.",
@@ -955,7 +1333,7 @@
       }
     },
     {
-      match: ["combine", "rx", "publisher", "reactive", "frp", "future", "promise"],
+      match: ["combine", "rx", "publisher", "reactive", "реактив", "frp", "future", "promise"],
       answer: {
         short: "Reactive programming моделює асинхронні події як streams. Combine/Rx дозволяють трансформувати, комбінувати й підписуватись на потоки значень.",
         details: [
@@ -985,12 +1363,12 @@
   ];
 
   const sectionAnswers = {
-    Core: "Очікувана відповідь має пояснити визначення, практичний iOS-приклад, trade-offs і типові помилки.",
-    UI: "Очікувана відповідь має покрити state, lifecycle, layout, accessibility, performance і поведінку на edge cases.",
-    Networking: "Очікувана відповідь має покрити request/response, error mapping, retries, auth, cancellation і тестування без реальної мережі.",
-    Storage: "Очікувана відповідь має пояснити, які дані де зберігати, як працює persistence, privacy і invalidation.",
-    Testing: "Очікувана відповідь має пояснити test pyramid, isolation, fake dependencies і які сценарії варто автоматизувати.",
-    Tooling: "Очікувана відповідь має пояснити, як інструмент використовується в командному workflow, CI/CD, dependency або release process."
+    Core: "Тема стосується базових принципів iOS/Swift-розробки: треба дати визначення, показати короткий Swift-приклад і пояснити практичний trade-off.",
+    UI: "Тема стосується побудови інтерфейсу: треба пояснити стан екрана, lifecycle, layout, accessibility або performance на конкретному прикладі.",
+    Networking: "Тема стосується мережевого шару: треба показати request/response flow, обробку помилок, decoding і тестування без реального backend.",
+    Storage: "Тема стосується збереження даних: треба пояснити, який storage обрати, як читати/писати дані, що з privacy та invalidation.",
+    Testing: "Тема стосується тестування: треба показати, що саме перевіряємо, як ізолюємо залежності і який test double використовуємо.",
+    Tooling: "Тема стосується командного workflow: треба пояснити, як інструмент використовується в CI/CD, dependency management або release process."
   };
 
   window.getInterviewAnswer = function getInterviewAnswer(item) {
