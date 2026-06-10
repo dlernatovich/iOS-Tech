@@ -1,5 +1,141 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="uk">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SwiftUI data flow</title><link rel="stylesheet" href="../../assets/styles.css"></head>
-<body><main class="qa"><a class="back" href="../../index.html">← На головну</a><p class="eyebrow">Middle / UI</p><h1>Як працює data flow у SwiftUI?</h1><section class="qa-card"><h2>Коротка відповідь</h2><p>Основні інструменти: <code>@State</code> для локального стану, <code>@Binding</code> для двостороннього зв'язку, <code>@StateObject</code> для власного observable object, <code>@ObservedObject</code> для переданого object, <code>@EnvironmentObject</code> для shared state.</p><p>Головна ідея: UI перераховується при зміні state, тому side effects треба ізолювати у view models/services.</p></section></main><script src="../../assets/learning.js"></script></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SwiftUI data flow</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <main class="qa">
+    <a class="back" href="../../index.html">← На головну</a>
+    <p class="eyebrow">Middle / UI</p>
+    <h1>Як працює data flow у SwiftUI?</h1>
+
+    <section class="qa-card">
+      <h2>Коротка відповідь</h2>
+      <p>
+        Основні інструменти: <code>@State</code> для локального стану, <code>@Binding</code> для двостороннього
+        зв'язку, <code>@StateObject</code> для object, який створює і яким володіє view,
+        <code>@ObservedObject</code> для object, який передали ззовні, і <code>@EnvironmentObject</code>
+        для shared state.
+      </p>
+      <p>
+        Головна ідея: UI перераховується при зміні state, тому side effects, бізнес-логіку і роботу з сервісами
+        варто ізолювати у view models/services.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>MVVM у SwiftUI: ObservableObject + ObservedObject + View</h2>
+      <p>
+        У MVVM для SwiftUI <code>View</code> відповідає за відображення, <code>ViewModel</code> тримає стан,
+        виконує дії користувача і викликає сервіси. Якщо view отримує view model ззовні, використовуй
+        <code>@ObservedObject</code>. Якщо view сама створює view model і має володіти її lifetime,
+        використовуй <code>@StateObject</code>.
+      </p>
+
+      <pre><code class="language-swift">import SwiftUI
+
+struct User: Equatable {
+    let name: String
+    let email: String
+}
+
+protocol UserLoading {
+    func loadUser() async throws -> User
+}</code></pre>
+
+      <pre><code class="language-swift">@MainActor
+final class ProfileViewModel: ObservableObject {
+    enum State: Equatable {
+        case idle
+        case loading
+        case loaded(User)
+        case failed(String)
+    }
+
+    @Published private(set) var state: State = .idle
+
+    private let loader: UserLoading
+
+    init(loader: UserLoading) {
+        self.loader = loader
+    }
+
+    func load() async {
+        state = .loading
+
+        do {
+            let user = try await loader.loadUser()
+            state = .loaded(user)
+        } catch {
+            state = .failed("Не вдалося завантажити профіль")
+        }
+    }
+}</code></pre>
+
+      <pre><code class="language-swift">struct ProfileView: View {
+    @ObservedObject var viewModel: ProfileViewModel
+
+    var body: some View {
+        content
+            .task {
+                await viewModel.load()
+            }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            ProgressView("Завантаження...")
+
+        case .loaded(let user):
+            VStack(alignment: .leading, spacing: 8) {
+                Text(user.name)
+                    .font(.headline)
+                Text(user.email)
+                    .foregroundStyle(.secondary)
+            }
+
+        case .failed(let message):
+            VStack(spacing: 12) {
+                Text(message)
+                Button("Спробувати ще раз") {
+                    Task { await viewModel.load() }
+                }
+            }
+        }
+    }
+}</code></pre>
+
+      <pre><code class="language-swift">struct ProfileContainerView: View {
+    @StateObject private var viewModel: ProfileViewModel
+
+    init(loader: UserLoading) {
+        _viewModel = StateObject(
+            wrappedValue: ProfileViewModel(loader: loader)
+        )
+    }
+
+    var body: some View {
+        ProfileView(viewModel: viewModel)
+    }
+}</code></pre>
+    </section>
+
+    <section class="qa-card">
+      <h2>Що важливо пояснити на співбесіді</h2>
+      <ul>
+        <li><code>ObservableObject</code> повідомляє SwiftUI про зміни через <code>@Published</code>.</li>
+        <li><code>@ObservedObject</code> не володіє object lifecycle, а лише спостерігає за переданою view model.</li>
+        <li><code>@StateObject</code> потрібен там, де view створює object і має зберегти його між перерахунками body.</li>
+        <li>ViewModel краще робити <code>@MainActor</code>, якщо вона оновлює UI state.</li>
+        <li>Сервіс краще вводити через protocol, щоб ViewModel було легко тестувати.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../assets/learning.js"></script>
+</body>
 </html>
