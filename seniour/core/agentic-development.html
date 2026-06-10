@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agentic development для iOS</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <main class="qa">
+    <a class="back" href="../../index.html">← На головну</a>
+    <p class="eyebrow">Seniour / Core</p>
+    <h1>Що таке agentic development і як застосовувати його в iOS-розробці?</h1>
+
+    <section class="qa-card">
+      <h2>Коротка відповідь</h2>
+      <p>
+        Agentic development — це підхід, у якому розробник працює разом з AI-агентом: формулює ціль, дає контекст,
+        просить агента дослідити код, запропонувати або внести зміни, запустити перевірки й пояснити результат.
+        Це не заміна інженерного мислення, а спосіб швидше пройти цикл: зрозуміти задачу, змінити код, перевірити,
+        відрефакторити й задокументувати рішення.
+      </p>
+      <p>
+        Для Senior iOS Developer важливо вміти не просто “попросити AI написати код”, а керувати роботою агента:
+        обмежувати scope, вимагати тести, перевіряти безпеку, помічати hallucinations, рев'ювити diff і не втрачати
+        ownership над архітектурними рішеннями.
+      </p>
+    </section>
+
+    <section class="learning-card">
+      <h2>Навчальний розбір</h2>
+      <div class="learning-grid">
+        <div class="learning-block">
+          <h3>Що треба зрозуміти</h3>
+          <p>
+            Agentic development працює найкраще, коли агент отримує конкретну мету, доступ до релевантного коду,
+            критерії готовності та дозвіл діяти маленькими кроками. Розробник лишається відповідальним за рішення,
+            а агент бере на себе дослідження, рутинні зміни, генерацію тестів, пошук регресій і підготовку пояснення.
+          </p>
+        </div>
+        <div class="learning-block">
+          <h3>Як пояснювати на співбесіді</h3>
+          <p>
+            Говори не про “магію AI”, а про engineering workflow: context gathering, plan, implementation,
+            verification, review. Хороша відповідь показує, що ти вмієш прискорювати delivery без втрати якості,
+            privacy, security і командних стандартів.
+          </p>
+        </div>
+        <div class="learning-block">
+          <h3>Типові помилки</h3>
+          <ul>
+            <li>Давати агенту широку задачу без критеріїв готовності й меж змін.</li>
+            <li>Приймати згенерований код без рев'ю, тестів і запуску застосунку.</li>
+            <li>Передавати приватні ключі, tokens, PII або внутрішні дані без політик безпеки.</li>
+            <li>Просити агента переписати архітектуру там, де потрібна локальна зміна.</li>
+          </ul>
+        </div>
+        <div class="learning-block">
+          <h3>Практика</h3>
+          <p>
+            Візьми невелику iOS feature, наприклад error state для екрана профілю. Попроси агента знайти відповідний
+            ViewModel, додати стан помилки, оновити UI, написати unit tests і пояснити diff. Після цього самостійно
+            перевір, чи не зламана навігація, локалізація, accessibility і loading flow.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="qa-card">
+      <h2>Приклад робочого промпта</h2>
+      <pre><code>Goal: Add an empty state to ProfileView when the user has no posts.
+Context: This is an iOS app using SwiftUI + MVVM. Keep changes scoped to Profile feature.
+Tasks:
+1. Inspect ProfileView, ProfileViewModel, and existing tests.
+2. Propose the smallest implementation plan.
+3. Add the empty state with localized copy and accessibility label.
+4. Add or update tests for loading, content, empty, and error states.
+5. Run the relevant test command and summarize the diff.</code></pre>
+      <p>
+        Такий промпт задає ціль, контекст, межі й очікувану перевірку. Він зменшує шанс, що агент піде переписувати
+        unrelated код або пропустить важливі production-вимоги.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>iOS-приклад: агент допомагає з тестованістю</h2>
+      <pre><code class="language-swift">protocol ProfileLoading {
+    func loadProfile() async throws -> Profile
+}
+
+@MainActor
+final class ProfileViewModel: ObservableObject {
+    enum State {
+        case idle
+        case loading
+        case loaded(Profile)
+        case failed(String)
+    }
+
+    @Published private(set) var state: State = .idle
+    private let loader: ProfileLoading
+
+    init(loader: ProfileLoading) {
+        self.loader = loader
+    }
+
+    func load() async {
+        state = .loading
+        do {
+            state = .loaded(try await loader.loadProfile())
+        } catch {
+            state = .failed("Не вдалося завантажити профіль")
+        }
+    }
+}</code></pre>
+      <p>
+        У цьому прикладі агент може швидко запропонувати protocol abstraction для тестів, fake loader і сценарії перевірки.
+        Завдання Senior-розробника — оцінити, чи цей abstraction справді потрібен у feature, чи він лише додає
+        зайвий boilerplate.
+      </p>
+    </section>
+
+    <section class="qa-card">
+      <h2>Чекліст для production-використання</h2>
+      <ul>
+        <li>Перед стартом: сформулюй goal, constraints, non-goals і критерії готовності.</li>
+        <li>Під час роботи: проси агента читати існуючий код і дотримуватися локальних patterns.</li>
+        <li>Після змін: дивись diff, запускай тести, перевіряй edge cases і user-facing behavior.</li>
+        <li>Для команди: домовся про політику privacy, code ownership, review rules і допустимі AI-інструменти.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
