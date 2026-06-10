@@ -122,6 +122,17 @@ main,
   color: var(--muted);
 }
 
+.quick-access {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+}
+
+.quick-access p {
+  margin-bottom: 0;
+}
+
 .level-heading {
   padding-top: 8px;
 }
@@ -357,6 +368,7 @@ code {
   }
 
   .interview-controls,
+  .quick-access,
   .question-card {
     grid-template-columns: 1fr;
   }
